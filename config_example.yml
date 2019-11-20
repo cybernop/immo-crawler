@@ -3,9 +3,9 @@ providers:
     state: Berlin
     city: Berlin
     districts:
-      - Prenzlauer-Berg-Prenzlauer-Berg
-      - Mitte-Mitte
-      - Friedrichshain-Friedrichshain
+      Prenzlauer-Berg: Prenzlauer-Berg-Prenzlauer-Berg
+      Mitte: Mitte-Mitte
+      Friedrichshain: Friedrichshain-Friedrichshain
 google:
   api_key:
   travel_locations:

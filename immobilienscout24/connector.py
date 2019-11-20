@@ -7,10 +7,10 @@ def get_apartments(config, cfg):
     logger.info("Getting information from immobilienscout24.de")
 
     list_ = {}
-    for district in cfg['districts']:
-        logger.info(f"for {district}...")
-        list_[district] = _get_apartments(cfg['state'], cfg['city'], district, config)
-        logger.info(f"...got {len(list_[district])} entries")
+    for label, district in cfg['districts'].items():
+        logger.info(f"for {label}...")
+        list_[label] = _get_apartments(cfg['state'], cfg['city'], district, config)
+        logger.info(f"...got {len(list_[label])} entries")
     logger.info("...done")
 
     return list_
