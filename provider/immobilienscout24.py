@@ -1,5 +1,8 @@
+from datetime import datetime
 import logging
 import requests
+
+from provider import listing
 
 
 def get_apartments(config, cfg):
@@ -32,7 +35,7 @@ def _get_apartments(state, city, district, config):
         r = requests.post(url)
         result_list = r.json()['searchResponseModel']['resultlist.resultlist']
         entries = result_list['resultlistEntries'][0]['resultlistEntry']
-        results += [__make_nice_entry(x['resultlist.realEstate']) for x in entries]
+        results += [__make_entry(x) for x in entries]
 
         i += 1
 
@@ -45,42 +48,47 @@ def __format_for_url(num):
     return '{:.2f}'.format(num).replace(".", ",") if num != 0 else ""
 
 
-def __make_nice_entry(entry):
-    result = {
-        'title': entry['title'],
-        'apartment_postcode': entry['address']['postcode'],
-        'apartment_city': entry['address']['city'],
-        'apartment_quarter': entry['address']['quarter'],
-        'living_space': entry['livingSpace'],
-        'number_of_rooms': entry['numberOfRooms'],
-        'balcony': entry['balcony'],
-        'garden': entry['garden'],
-        'built_in_kitchen': entry['builtInKitchen'],
-        'private': entry['privateOffer'],
-        'price_base': entry['price']['value'],
-        'price_warm': entry['calculatedPrice']['value'],
-    }
+def __make_entry(entry_dict):
+    entry = listing.Entry()
 
-    if 'firstname' in entry['contactDetails']:
-        result['contact_firstname'] = entry['contactDetails']['firstname']
+    entry.id = entry_dict['@id']
+    entry.mod_date = datetime.strptime(entry_dict['@modification'].replace(':', ''), '%Y-%m-%dT%H%M%S.%f%z')
 
-    if 'lastname' in entry['contactDetails']:
-        result['contact_lastname'] = entry['contactDetails']['lastname']
+    entry_dict = entry_dict['resultlist.realEstate']
 
-    if 'cellPhoneNumber' in entry['contactDetails']:
-        result['contact_phone_number'] = entry['contactDetails']['cellPhoneNumber']
-    elif 'phoneNumber' in entry['contactDetails']:
-        result['contact_phone_number'] = entry['contactDetails']['phoneNumber']
+    entry.title = entry_dict['title']
+    entry.living_space = entry_dict['livingSpace']
+    entry.number_of_rooms = entry_dict['numberOfRooms']
+    entry.balcony = entry_dict['balcony']
+    entry.garden = entry_dict['garden']
+    entry.built_in_kitchen = entry_dict['builtInKitchen']
+    entry.private = entry_dict['privateOffer']
+    entry.price_base = entry_dict['price']['value']
+    entry.price_warm = entry_dict['calculatedPrice']['value']
 
-    if 'street' in entry['address']:
-        result['apartment_street'] = entry['address']['street']
-    if 'houseNumber' in entry['address']:
-        result['apartment_houseNumber'] = entry['address']['houseNumber']
+    entry.source = 'immobilienscout24'
+    entry.url = 'https://www.immobilienscout24.de/expose/' + entry_dict['@id']
 
-    if 'company' in entry['contactDetails']:
-        result['contact_company'] = entry['contactDetails']['company']
+    address_dict = entry_dict['address']
+    address = listing.Address()
 
-    result['source'] = 'immobilienscout24'
-    result['id'] = 'https://www.immobilienscout24.de/expose/' + entry['@id']
+    address.street = address_dict.get('street')
+    address.house_number = address_dict.get('houseNumber')
+    address.quarter = address_dict['quarter']
+    address.post_code = address_dict['postcode']
+    address.city = address_dict['city']
 
-    return result
+    entry.address = address
+
+    contact_dict = entry_dict['contactDetails']
+    contact = listing.Contact()
+
+    contact.first_name = contact_dict.get('firstname')
+    contact.last_name = contact_dict.get('lastname')
+    contact.mobile_phone = contact_dict.get('cellPhoneNumber')
+    contact.phone = contact_dict.get('phoneNumber')
+    contact.company = contact_dict.get('company')
+
+    entry.contact = contact
+
+    return entry
