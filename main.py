@@ -2,7 +2,7 @@ import logging
 import pandas
 import yaml
 
-import immobilienscout24
+import sources
 import googlemaps
 
 
@@ -56,7 +56,7 @@ def _to_data_frame(apartments):
 
 def get_apartments_from_providers(config, cfg):
     providers = {
-        'immobilienscout24': immobilienscout24,
+        'immobilienscout24': sources,
     }
 
     apartments = {}
