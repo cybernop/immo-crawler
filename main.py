@@ -2,7 +2,7 @@ import logging
 import pandas
 import yaml
 
-import immobilienscout24
+import provider
 import googlemaps
 
 
@@ -26,7 +26,7 @@ def main():
     config.min_price = 500
     config.max_price = 1500
 
-    apartments = get_apartments_from_providers(config, cfg['providers'])
+    apartments = provider.get_apartments(config, cfg['providers'])
     googlemaps.add_gmaps_link(apartments)
     add_travel_time(cfg['google'], apartments)
     write_to_excel('results.xlsx', apartments)
@@ -52,21 +52,6 @@ def _to_data_frame(apartments):
     data_frame = pandas.DataFrame.from_dict(apartments)
     data_frame.columns = map(snake_to_camel, data_frame.columns)
     return data_frame
-
-
-def get_apartments_from_providers(config, cfg):
-    providers = {
-        'immobilienscout24': immobilienscout24,
-    }
-
-    apartments = {}
-    for provider_name, provider in providers.items():
-        res = provider.get_apartments(config, cfg[provider_name])
-        for quarter, aps in res.items():
-            if quarter not in apartments:
-                apartments[quarter] = []
-            apartments[quarter] += aps
-    return apartments
 
 
 if __name__ == '__main__':
