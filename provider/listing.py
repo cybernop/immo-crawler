@@ -39,3 +39,34 @@ class Contact:
         self.last_name = None
         self.mobile_phone = None
         self.phone = None
+
+
+class Listings:
+    def __init__(self):
+        super(Listings, self).__setattr__('map', {})
+
+    def __getattr__(self, item):
+        if item not in self.map:
+            self.map[item] = []
+        return self.map[item]
+
+    def __setattr__(self, key, value):
+        self.map[key] = value
+
+    def __add__(self, other):
+        for quarter, aps in other.map.items():
+            new = getattr(self, quarter) + aps
+            setattr(self, quarter, new)
+        return self
+
+    def __getstate__(self):
+        return self.map
+
+    def __setstate__(self, state):
+        super(Listings, self).__setattr__('map', state)
+
+    def info(self):
+        entries = 0
+        for _, list_ in self.map.items():
+            entries += len(list_)
+        return {'quarters': len(self.map), 'entries': entries}

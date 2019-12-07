@@ -9,11 +9,11 @@ def get_apartments(config, cfg):
     logger = logging.getLogger(__name__)
     logger.info("Getting information from immobilienscout24.de")
 
-    list_ = {}
+    list_ = listing.Listings()
     for label, district in cfg['districts'].items():
         logger.info(f"for {label}...")
-        list_[label] = _get_apartments(cfg['state'], cfg['city'], district, config)
-        logger.info(f"...got {len(list_[label])} entries")
+        setattr(list_, label, _get_apartments(cfg['state'], cfg['city'], district, config))
+        logger.info(f"...got {len(getattr(list_, label))} entries")
     logger.info("...done")
 
     return list_
