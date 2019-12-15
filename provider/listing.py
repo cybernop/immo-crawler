@@ -1,7 +1,8 @@
 class Entry:
-    __slots__ = ['id', 'mod_date', 'title', 'living_space', 'number_of_rooms', 'balcony', 'garden', 'built_in_kitchen', 'private', 'price_base', 'price_warm', 'source', 'url', 'address', 'contact']
+    __slots__ = ['uuid', 'id', 'mod_date', 'title', 'living_space', 'number_of_rooms', 'balcony', 'garden', 'built_in_kitchen', 'private', 'price_base', 'price_warm', 'source', 'url', 'address', 'contact']
 
     def __init__(self):
+        self.uuid = None
         self.id = None
         self.mod_date = None
         self.title = None
@@ -45,19 +46,13 @@ class Listings:
     def __init__(self):
         super(Listings, self).__setattr__('map', {})
 
-    def __getattr__(self, item):
+    def __getattr__(self, item: str):
         if item not in self.map:
-            self.map[item] = []
+            return None
         return self.map[item]
 
-    def __setattr__(self, key, value):
+    def __setattr__(self, key: str, value: Entry):
         self.map[key] = value
-
-    def __add__(self, other):
-        for quarter, aps in other.map.items():
-            new = getattr(self, quarter) + aps
-            setattr(self, quarter, new)
-        return self
 
     def __getstate__(self):
         return self.map
@@ -65,8 +60,17 @@ class Listings:
     def __setstate__(self, state):
         super(Listings, self).__setattr__('map', state)
 
-    def info(self):
-        entries = 0
-        for _, list_ in self.map.items():
-            entries += len(list_)
-        return {'quarters': len(self.map), 'entries': entries}
+    def __len__(self):
+        return len(self.map)
+
+    def update(self, other):
+        updated = []
+        for uuid, app in other.map.items():
+            if uuid in self.map:
+                if app.mod_date > self.map[uuid].mod_date:
+                    self.map[uuid] = app
+                    updated.append(app)
+            else:
+                setattr(self, uuid, app)
+                updated.append(app)
+        return updated

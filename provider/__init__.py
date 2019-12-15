@@ -14,5 +14,5 @@ def get_apartments(config, cfg):
             name = child.stem
             imported = getattr(__import__('provider', fromlist=[name]), name)
             res = imported.get_apartments(config, cfg[name])
-            apartments += res
+            apartments.update(res)
     return apartments
