@@ -4,6 +4,7 @@ import yaml
 
 import provider
 import googlemaps
+from inout import cache
 
 
 class Config:
@@ -16,8 +17,10 @@ class Config:
         self.max_rooms = 0
 
 
-def main():
+def main(cache_file):
     logging.basicConfig(level=logging.INFO)
+
+    apartments = cache.read(cache_file)
 
     with open("config.yml", 'r') as ymlfile:
         cfg = yaml.load(ymlfile, Loader=yaml.SafeLoader)
@@ -26,10 +29,16 @@ def main():
     config.min_price = 500
     config.max_price = 1500
 
-    apartments = provider.get_apartments(config, cfg['providers'])
-    googlemaps.add_gmaps_link(apartments)
-    add_travel_time(cfg['google'], apartments)
-    write_to_excel('results.xlsx', apartments)
+    apartments_new = provider.get_apartments(config, cfg['providers'])
+
+    updated = apartments.update(apartments_new)
+    logging.getLogger().info(f"got {len(updated)} updates")
+
+    # googlemaps.add_gmaps_link(apartments)
+    # add_travel_time(cfg['google'], apartments)
+    # write_to_excel('results.xlsx', apartments)
+
+    cache.write(apartments, cache_file)
 
 
 def add_travel_time(google_cfg, apartments):
@@ -55,4 +64,6 @@ def _to_data_frame(apartments):
 
 
 if __name__ == '__main__':
-    main()
+    cache_file = 'cache'
+
+    main(cache_file)

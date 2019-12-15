@@ -9,11 +9,12 @@ def get_apartments(config, cfg):
     logger = logging.getLogger(__name__)
     logger.info("Getting information from immobilienscout24.de")
 
-    list_ = {}
+    list_ = listing.Listings()
     for label, district in cfg['districts'].items():
         logger.info(f"for {label}...")
-        list_[label] = _get_apartments(cfg['state'], cfg['city'], district, config)
-        logger.info(f"...got {len(list_[label])} entries")
+        listings = _get_apartments(cfg['state'], cfg['city'], district, config)
+        logger.info(f"...got {len(listings)} entries")
+        list_.update(listings)
     logger.info("...done")
 
     return list_
@@ -28,14 +29,17 @@ def _get_apartments(state, city, district, config):
     max_size = __format_for_url(config.max_size)
 
     i = 1
-    results = []
+    results = listing.Listings()
     while True:
         url = f'https://www.immobilienscout24.de/Suche/S-T/P-{i}/Wohnung-Miete/{state}/{city}/{district}/{min_rooms}-{max_rooms}/{min_size}-{max_size}/EURO-{min_price}-{max_price}/-/-/-/true/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/2,3'
 
         r = requests.post(url)
         result_list = r.json()['searchResponseModel']['resultlist.resultlist']
         entries = result_list['resultlistEntries'][0]['resultlistEntry']
-        results += [__make_entry(x) for x in entries]
+
+        for entry in entries:
+            entry = __make_entry(entry)
+            setattr(results, entry.uuid, entry)
 
         i += 1
 
@@ -90,5 +94,7 @@ def __make_entry(entry_dict):
     contact.company = contact_dict.get('company')
 
     entry.contact = contact
+
+    entry.uuid = f"{entry.source}-{entry.id}"
 
     return entry
