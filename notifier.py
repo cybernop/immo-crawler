@@ -9,7 +9,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 class Notifier:
     def __init__(self, name, greeting, token):
         self.logger = logging.getLogger(__name__)
-        self.name=name
+        self.name = name
         self.greeting = greeting
 
         self.updater = Updater(token=token, use_context=True)
@@ -20,18 +20,18 @@ class Notifier:
 
         self.updater.start_polling()
 
-        self.registered = []
+        self.registered = {}
         self.logger.info(f'started notifier for {self.name}')
 
     def start(self, update, context):
-        context.bot.send_message(chat_id=update.effective_chat.id,text=self.greeting)
-        self.registered.append((context, update))
+        context.bot.send_message(chat_id=update.effective_chat.id, text=self.greeting)
+        self.registered[update.effective_chat.id] = context.bot
         self.logger.info(f'registered {update.effective_chat.id}')
 
     def send_notification(self, message):
-        for context, update in self.registered:
-            context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-            self.logger.info(f'sent notification to {update.effective_chat.id}: {message}')
+        for chat_id, bot in self.registered.items():
+            bot.send_message(chat_id=chat_id, text=message)
+            self.logger.info(f'sent notification to {chat_id}: {message}')
 
 
 if __name__ == '__main__':
