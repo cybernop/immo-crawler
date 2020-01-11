@@ -32,11 +32,12 @@ def main(cache_file):
     apartments_new = provider.get_apartments(config, cfg['providers'])
 
     updated = apartments.update(apartments_new)
-    logging.getLogger().info(f"got {len(updated)} updates")
+    removed = apartments.remove_not_existing(apartments_new)
+    logging.getLogger().info(f"got {len(updated)} updates, removed {removed}")
 
     # googlemaps.add_gmaps_link(apartments)
     # add_travel_time(cfg['google'], apartments)
-    # write_to_excel('results.xlsx', apartments)
+    # write_to_excel('results.xlsx', apartments]
 
     cache.write(apartments, cache_file)
 
