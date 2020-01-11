@@ -1,10 +1,14 @@
 import logging
+import pathlib
+
 import pandas
 import yaml
 
 import provider
 import googlemaps
 from inout import cache
+
+CACHE_FILE_NAME = 'cache'
 
 
 class Config:
@@ -19,9 +23,11 @@ class Config:
 
 
 class Crawler:
-    def __init__(self, config, cache_file, notifier=None):
+
+    def __init__(self, config, data_dir='.', notifier=None):
         self.config = config
-        self.cache_file = cache_file
+        self.data_dir = pathlib.Path(data_dir).absolute()
+        self.cache_file = self.data_dir / CACHE_FILE_NAME
         self.notifier = notifier
 
     def crawl(self):
@@ -37,7 +43,7 @@ class Crawler:
         # add_travel_time(cfg['google'], apartments)
         # write_to_excel('results.xlsx', apartments]
 
-        if self.notifier:
+        if self.notifier and len(updated) > 0:
             notification = self.prepare_notification(updated, removed)
             self.notifier.send_notification(notification)
 
@@ -67,7 +73,6 @@ class Crawler:
 
 if __name__ == '__main__':
     def main():
-        cache_file = 'cache'
         logging.basicConfig(level=logging.INFO)
 
         with open("config.yml", 'r') as yml_file:
@@ -79,7 +84,7 @@ if __name__ == '__main__':
         config.max_price = 1500
         config.providers = cfg['providers']
 
-        crawler = Crawler(config, cache_file)
+        crawler = Crawler(config)
         crawler.crawl()
 
 

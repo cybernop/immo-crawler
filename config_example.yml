@@ -1,11 +1,10 @@
+update_interval: 600
 providers:
   immobilienscout24:
-    state: Berlin
-    city: Berlin
+    state: state
+    city: city
     districts:
-      Prenzlauer-Berg: Prenzlauer-Berg-Prenzlauer-Berg
-      Mitte: Mitte-Mitte
-      Friedrichshain: Friedrichshain-Friedrichshain
+      district: district
 google:
   api_key:
   travel_locations:
@@ -14,3 +13,7 @@ google:
       apartment_houseNumber:
       apartment_postcode:
       apartment_city:
+notifier:
+  name: ImmoCrawler
+  greeting: You are registered to ImmoCrawler notifications
+  token: token
