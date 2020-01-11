@@ -83,7 +83,7 @@ if __name__ == '__main__':
     def main():
         logging.basicConfig(level=logging.INFO)
 
-        with open("config.yml", 'r') as yml_file:
+        with open("configs/config.yml", 'r') as yml_file:
             cfg = yaml.load(yml_file, Loader=yaml.SafeLoader)
 
         config = Config()

@@ -38,7 +38,7 @@ if __name__ == '__main__':
     import pathlib
     import time
 
-    config = json.loads(pathlib.Path('config-notifier.json').read_text())
+    config = json.loads(pathlib.Path('configs/config-notifier.json').read_text())
     notifier = Notifier(name=config['name'], greeting=config['greeting'], token=config['token'])
 
     while True:
