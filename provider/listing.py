@@ -1,5 +1,10 @@
+import logging
+from datetime import datetime
+
+
 class Entry:
-    __slots__ = ['uuid', 'id', 'mod_date', 'title', 'living_space', 'number_of_rooms', 'balcony', 'garden', 'built_in_kitchen', 'private', 'price_base', 'price_warm', 'source', 'url', 'address', 'contact']
+    __slots__ = ['uuid', 'id', 'mod_date', 'title', 'living_space', 'number_of_rooms', 'balcony', 'garden',
+                 'built_in_kitchen', 'private', 'price_base', 'price_warm', 'source', 'url', 'address', 'contact']
 
     def __init__(self):
         self.uuid = None
@@ -18,6 +23,14 @@ class Entry:
         self.url = None
         self.address = None
         self.contact = None
+
+    def __str__(self):
+        max_length = 80
+        title = self.title if len(self.title) < 80 else f'{self.title[:max_length-3]}...'
+        return f'<b>{title}</b> {self.living_space}m2, {self.number_of_rooms} Zimmer <b>{self.price_warm}€</b> ({self.price_base}€)'
+
+    def valid(self) -> bool:
+        return self.mod_date and isinstance(self.mod_date, datetime)
 
 
 class Address:
@@ -45,6 +58,7 @@ class Contact:
 class Listings:
     def __init__(self):
         super(Listings, self).__setattr__('map', {})
+        super(Listings, self).__setattr__('logger', logging.getLogger(__name__))
 
     def __getattr__(self, item: str):
         if item not in self.map:
@@ -52,7 +66,10 @@ class Listings:
         return self.map[item]
 
     def __setattr__(self, key: str, value: Entry):
-        self.map[key] = value
+        if not value.valid():
+            self.logger.warning(f'Listings: ignore invalid entry {value}')
+        else:
+            self.map[key] = value
 
     def __getstate__(self):
         return self.map
@@ -63,14 +80,28 @@ class Listings:
     def __len__(self):
         return len(self.map)
 
-    def update(self, other):
+    def update(self, other) -> []:
         updated = []
         for uuid, app in other.map.items():
-            if uuid in self.map:
-                if app.mod_date > self.map[uuid].mod_date:
-                    self.map[uuid] = app
+            if app.valid():
+                if uuid in self.map:
+                    if app.mod_date > self.map[uuid].mod_date:
+                        self.map[uuid] = app
+                        updated.append(app)
+                else:
+                    setattr(self, uuid, app)
                     updated.append(app)
             else:
-                setattr(self, uuid, app)
-                updated.append(app)
+                self.logger.error(f'Listings.update: ignore invalid entry {app}')
         return updated
+
+    def remove_not_existing(self, other) -> int:
+        remove_uuids = []
+        for uuid in self.map:
+            if uuid not in other.map.keys():
+                remove_uuids.append(uuid)
+
+        for uuid in remove_uuids:
+            del self.map[uuid]
+
+        return len(remove_uuids)

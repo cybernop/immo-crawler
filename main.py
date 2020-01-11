@@ -1,69 +1,44 @@
+import argparse
 import logging
-import pandas
+import pathlib
+import time
+
 import yaml
 
-import provider
-import googlemaps
-from inout import cache
+import crawler as cwlr
+import notifier as ntfr
 
 
-class Config:
-    def __init__(self):
-        self.min_price = 0
-        self.max_price = 0
-        self.min_size = 60
-        self.max_size = 0
-        self.min_rooms = 0
-        self.max_rooms = 0
+def main():
+    arg_parser = argparse.ArgumentParser()
 
+    arg_parser.add_argument('--data-dir', default='.', help='directory where to store data')
+    arg_parser.add_argument('--config', required=True, help='config yaml file')
 
-def main(cache_file):
+    args = arg_parser.parse_args()
+
     logging.basicConfig(level=logging.INFO)
 
-    apartments = cache.read(cache_file)
+    if not pathlib.Path(args.config).exists():
+        logging.error(f'config file does not exist {args.config}')
+        exit(-1)
 
-    with open("config.yml", 'r') as ymlfile:
-        cfg = yaml.load(ymlfile, Loader=yaml.SafeLoader)
+    with open(args.config, 'r') as yml_file:
+        cfg = yaml.load(yml_file, Loader=yaml.SafeLoader)
 
-    config = Config()
+    config = cwlr.Config()
+    config.min_size = 60
     config.min_price = 500
     config.max_price = 1500
+    config.providers = cfg['providers']
 
-    apartments_new = provider.get_apartments(config, cfg['providers'])
+    notifier = ntfr.Notifier(name=cfg['notifier']['name'], greeting=cfg['notifier']['greeting'], token=cfg['notifier']['token'])
 
-    updated = apartments.update(apartments_new)
-    logging.getLogger().info(f"got {len(updated)} updates")
-
-    # googlemaps.add_gmaps_link(apartments)
-    # add_travel_time(cfg['google'], apartments)
-    # write_to_excel('results.xlsx', apartments)
-
-    cache.write(apartments, cache_file)
-
-
-def add_travel_time(google_cfg, apartments):
-    googlemaps.add_travel_time(apartments, google_cfg)
-
-
-def write_to_excel(file_name, apartments):
-    with pandas.ExcelWriter(file_name) as writer:
-        for quarter, aps in apartments.items():
-            data_frame = _to_data_frame(aps)
-            data_frame.to_excel(writer, sheet_name=quarter)
-        writer.save()
-
-
-def snake_to_camel(word):
-    return ''.join(x.capitalize() or '_' for x in word.split('_'))
-
-
-def _to_data_frame(apartments):
-    data_frame = pandas.DataFrame.from_dict(apartments)
-    data_frame.columns = map(snake_to_camel, data_frame.columns)
-    return data_frame
+    crawler = cwlr.Crawler(config, args.data_dir, notifier)
+    while True:
+        crawler.crawl()
+        time.sleep(cfg['update_interval'])
 
 
 if __name__ == '__main__':
-    cache_file = 'cache'
-
-    main(cache_file)
+    main()
