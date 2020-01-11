@@ -44,13 +44,21 @@ class Crawler:
         # write_to_excel('results.xlsx', apartments]
 
         if self.notifier and len(updated) > 0:
-            notification = self.prepare_notification(updated, removed)
+            notification = f'got {len(updated)} updates, removed {removed}'
             self.notifier.send_notification(notification)
+            entries = self.get_updated_entries(apartments, updated)
+
+            if len(entries) > 5:
+                entries = entries[:5]
+
+            for entry in entries:
+                self.notifier.send_notification(str(entry))
 
         cache.write(apartments, self.cache_file)
 
-    def prepare_notification(self, updated, removed):
-        return f'got {len(updated)} updates, removed {removed}'
+    @staticmethod
+    def get_updated_entries(apartments, updated):
+        return [getattr(apartments, update.uuid) for update in updated]
 
     # def add_travel_time(google_cfg, apartments):
     #     googlemaps.add_travel_time(apartments, google_cfg)
