@@ -19,9 +19,10 @@ class Config:
 
 
 class Crawler:
-    def __init__(self, config, cache_file):
+    def __init__(self, config, cache_file, notifier=None):
         self.config = config
         self.cache_file = cache_file
+        self.notifier = notifier
 
     def crawl(self):
         apartments = cache.read(self.cache_file)
@@ -36,7 +37,14 @@ class Crawler:
         # add_travel_time(cfg['google'], apartments)
         # write_to_excel('results.xlsx', apartments]
 
+        if self.notifier:
+            notification = self.prepare_notification(updated, removed)
+            self.notifier.send_notification(notification)
+
         cache.write(apartments, self.cache_file)
+
+    def prepare_notification(self, updated, removed):
+        return f'got {len(updated)} updates, removed {removed}'
 
     # def add_travel_time(google_cfg, apartments):
     #     googlemaps.add_travel_time(apartments, google_cfg)
