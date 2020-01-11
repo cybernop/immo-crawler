@@ -5,14 +5,14 @@ import requests
 from provider import listing
 
 
-def get_apartments(config, cfg):
+def get_apartments(config, provider_config):
     logger = logging.getLogger(__name__)
     logger.info("Getting information from immobilienscout24.de")
 
     list_ = listing.Listings()
-    for label, district in cfg['districts'].items():
+    for label, district in provider_config['districts'].items():
         logger.info(f"for {label}...")
-        listings = _get_apartments(cfg['state'], cfg['city'], district, config)
+        listings = _get_apartments(provider_config['state'], provider_config['city'], district, config)
         logger.info(f"...got {len(listings)} entries")
         list_.update(listings)
     logger.info("...done")
