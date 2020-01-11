@@ -1,5 +1,6 @@
 import argparse
 import logging
+import pathlib
 import time
 
 import yaml
@@ -12,12 +13,17 @@ def main():
     arg_parser = argparse.ArgumentParser()
 
     arg_parser.add_argument('--data-dir', default='.', help='directory where to store data')
+    arg_parser.add_argument('--config', required=True, help='config yaml file')
 
     args = arg_parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
 
-    with open("config.yml", 'r') as yml_file:
+    if not pathlib.Path(args.config).exists():
+        logging.error(f'config file does not exist {args.config}')
+        exit(-1)
+
+    with open(args.config, 'r') as yml_file:
         cfg = yaml.load(yml_file, Loader=yaml.SafeLoader)
 
     config = cwlr.Config()
