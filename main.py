@@ -5,8 +5,8 @@ import time
 
 import yaml
 
-import crawler as cwlr
-import notifier as ntfr
+import immocrawler.crawler as cwlr
+import immocrawler.notifier as ntfr
 
 
 def main():

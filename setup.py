@@ -7,13 +7,9 @@ setup(name='immocrawler',
       author='Alexander Schulze',
       author_email='cibernop@gmail.com',
       packages=[
-          'inout',
-          'provider',
-      ],
-      py_modules=[
-          'crawler',
-          'googlemaps',
-          'notifier',
+          'immocrawler',
+          'immocrawler.inout',
+          'immocrawler.provider',
       ],
       install_requires=[
           'pandas==0.25.1',

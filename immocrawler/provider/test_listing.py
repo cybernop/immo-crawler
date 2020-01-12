@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 
-from provider import listing
+from immocrawler.provider import listing
 
 
 class TestListingsUpdate(unittest.TestCase):

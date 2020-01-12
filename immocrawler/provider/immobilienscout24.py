@@ -2,7 +2,7 @@ from datetime import datetime
 import logging
 import requests
 
-from provider import listing
+from immocrawler.provider import listing
 
 
 def get_apartments(config, provider_config):

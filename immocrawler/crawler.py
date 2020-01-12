@@ -4,9 +4,8 @@ import pathlib
 import pandas
 import yaml
 
-import provider
-import googlemaps
-from inout import cache
+from immocrawler import googlemaps, provider
+from immocrawler.inout import cache
 
 CACHE_FILE_NAME = 'cache'
 
