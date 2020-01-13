@@ -1,6 +1,6 @@
 import pathlib
 
-from provider import listing
+from immocrawler.provider import listing
 
 pwd = pathlib.Path(__file__).parent
 
