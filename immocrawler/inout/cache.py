@@ -2,7 +2,7 @@ import logging
 import pathlib
 import pickle
 
-from provider import listing
+from immocrawler.provider import listing
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 import pathlib
 
-from inout import cache
-from provider import listing
+from immocrawler.inout import cache
+from immocrawler.provider import listing
 
 from unittest import TestCase
 

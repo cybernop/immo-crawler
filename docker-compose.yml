@@ -1,0 +1,10 @@
+version: "2"
+services:
+    immo-crawler:
+        image: "raspberrypi:5000/immo-crawler"
+        volumes:
+            - "./configs:/cfg"
+            - "data:/data"
+        restart: always
+volumes:
+    data:

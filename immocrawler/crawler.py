@@ -4,9 +4,8 @@ import pathlib
 import pandas
 import yaml
 
-import provider
-import googlemaps
-from inout import cache
+from immocrawler import googlemaps, provider
+from immocrawler.inout import cache
 
 CACHE_FILE_NAME = 'cache'
 
@@ -83,7 +82,7 @@ if __name__ == '__main__':
     def main():
         logging.basicConfig(level=logging.INFO)
 
-        with open("config.yml", 'r') as yml_file:
+        with open("configs/config.yml", 'r') as yml_file:
             cfg = yaml.load(yml_file, Loader=yaml.SafeLoader)
 
         config = Config()
