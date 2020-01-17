@@ -1,10 +1,20 @@
 version: "2"
 services:
     immo-crawler:
-        image: "raspberrypi:5000/immo-crawler"
+        build:
+            context: .
+        image: "immo-crawler"
         volumes:
             - "./configs:/cfg"
             - "data:/data"
         restart: always
+        networks:
+            - notifier
+        command:
+            --notifier-url "http://telegram-notifier:9001"
 volumes:
     data:
+networks:
+    notifier:
+        external:
+            name: telegram-notifier_default

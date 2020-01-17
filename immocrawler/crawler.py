@@ -1,10 +1,9 @@
 import logging
 import pathlib
 
-import pandas
 import yaml
 
-from immocrawler import googlemaps, provider
+from immocrawler import provider
 from immocrawler.inout import cache
 
 CACHE_FILE_NAME = 'cache'
@@ -40,18 +39,17 @@ class Crawler:
 
         # googlemaps.add_gmaps_link(apartments)
         # add_travel_time(cfg['google'], apartments)
-        # write_to_excel('results.xlsx', apartments]
 
         if self.notifier and len(updated) > 0:
             notification = f'got {len(updated)} updates, removed {removed}'
-            self.notifier.send_notification(notification)
+            self.notifier.send_message(notification)
             entries = self.get_updated_entries(apartments, updated)
 
             if len(entries) > 5:
                 entries = entries[:5]
 
             for entry in entries:
-                self.notifier.send_notification(str(entry))
+                self.notifier.send_message(str(entry))
 
         cache.write(apartments, self.cache_file)
 
@@ -61,21 +59,6 @@ class Crawler:
 
     # def add_travel_time(google_cfg, apartments):
     #     googlemaps.add_travel_time(apartments, google_cfg)
-    #
-    # def write_to_excel(file_name, apartments):
-    #     with pandas.ExcelWriter(file_name) as writer:
-    #         for quarter, aps in apartments.items():
-    #             data_frame = _to_data_frame(aps)
-    #             data_frame.to_excel(writer, sheet_name=quarter)
-    #         writer.save()
-    #
-    # def snake_to_camel(word):
-    #     return ''.join(x.capitalize() or '_' for x in word.split('_'))
-    #
-    # def _to_data_frame(apartments):
-    #     data_frame = pandas.DataFrame.from_dict(apartments)
-    #     data_frame.columns = map(snake_to_camel, data_frame.columns)
-    #     return data_frame
 
 
 if __name__ == '__main__':

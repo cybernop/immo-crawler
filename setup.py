@@ -9,9 +9,7 @@ setuptools.setup(
     author_email='cibernop@gmail.com',
     packages=setuptools.find_packages(),
     install_requires=[
-        'pandas',
         'PyYAML',
-        'python-telegram-bot',
         'requests',
     ]
 )
