@@ -8,16 +8,17 @@ import yaml
 import immocrawler.crawler as cwlr
 import immocrawler.notifier as ntfr
 
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+
 
 def main():
     arg_parser = argparse.ArgumentParser()
 
     arg_parser.add_argument('--data-dir', default='.', help='directory where to store data')
     arg_parser.add_argument('--config', required=True, help='config yaml file')
+    arg_parser.add_argument('--notifier-url', required=True, help='url of the notifier service')
 
     args = arg_parser.parse_args()
-
-    logging.basicConfig(level=logging.INFO)
 
     if not pathlib.Path(args.config).exists():
         logging.error(f'config file does not exist {args.config}')
@@ -32,7 +33,7 @@ def main():
     config.max_price = 1500
     config.providers = cfg['providers']
 
-    notifier = ntfr.Notifier(name=cfg['notifier']['name'], greeting=cfg['notifier']['greeting'], token=cfg['notifier']['token'])
+    notifier = ntfr.Client(args.notifier_url)
 
     crawler = cwlr.Crawler(config, args.data_dir, notifier)
     while True:

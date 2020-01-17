@@ -42,14 +42,14 @@ class Crawler:
 
         if self.notifier and len(updated) > 0:
             notification = f'got {len(updated)} updates, removed {removed}'
-            self.notifier.send_notification(notification)
+            self.notifier.send_message(notification)
             entries = self.get_updated_entries(apartments, updated)
 
             if len(entries) > 5:
                 entries = entries[:5]
 
             for entry in entries:
-                self.notifier.send_notification(str(entry))
+                self.notifier.send_message(str(entry))
 
         cache.write(apartments, self.cache_file)
 
