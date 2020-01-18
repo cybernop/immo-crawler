@@ -27,7 +27,7 @@ class Entry:
     def __str__(self):
         max_length = 80
         title = self.title if len(self.title) < 80 else f'{self.title[:max_length-3]}...'
-        return f'<b>{title}</b> {self.living_space}m2, {self.number_of_rooms} Zimmer <b>{self.price_warm}€</b> ({self.price_base}€)'
+        return f'<b>{title}</b>\n{self.living_space}m2, {self.number_of_rooms} Zimmer\n<b>{self.price_warm}€</b> ({self.price_base}€)'
 
     def valid(self) -> bool:
         return self.mod_date and isinstance(self.mod_date, datetime)
