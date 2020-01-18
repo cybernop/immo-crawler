@@ -45,9 +45,6 @@ class Crawler:
             self.notifier.send_message(notification)
             entries = self.get_updated_entries(apartments, updated)
 
-            if len(entries) > 5:
-                entries = entries[:5]
-
             for entry in entries:
                 self.notifier.send_message(str(entry))
 
