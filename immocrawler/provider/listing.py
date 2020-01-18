@@ -4,7 +4,8 @@ from datetime import datetime
 
 class Entry:
     __slots__ = ['uuid', 'id', 'mod_date', 'title', 'living_space', 'number_of_rooms', 'balcony', 'garden',
-                 'built_in_kitchen', 'private', 'price_base', 'price_warm', 'source', 'url', 'address', 'contact']
+                 'built_in_kitchen', 'private', 'price_base', 'price_warm', 'source', 'url', 'address', 'contact',
+                 'travel_times', 'transportation']
 
     def __init__(self):
         self.uuid = None
@@ -23,14 +24,29 @@ class Entry:
         self.url = None
         self.address = None
         self.contact = None
+        self.travel_times = []
+        self.transportation = []
 
     def __str__(self):
         max_length = 80
         title = self.title if len(self.title) < 80 else f'{self.title[:max_length-3]}...'
-        return f'<b>{title}</b>\n\n' \
-               f'{self.living_space}m2, {self.number_of_rooms} Zimmer\n' \
-               f'<b>{self.price_warm}€</b> ({self.price_base}€)\n\n' \
-               f'<a href="{self.url}">{self.source}</a>'
+
+        repr = [
+            f'<b>{title}</b>',
+            f'{self.living_space}m2, {self.number_of_rooms} Zimmer\n'
+            f'<b>{self.price_warm}€</b> ({self.price_base}€)'
+        ]
+
+        if self.travel_times:
+            repr.append(' / '.join(self.travel_times))
+
+        if self.transportation:
+            repr.append(', '.join(self.transportation))
+
+        if self.url:
+            repr.append(f'<a href="{self.url}">{self.source}</a>')
+
+        return '\n\n'.join(repr)
 
     def valid(self) -> bool:
         return self.mod_date and isinstance(self.mod_date, datetime)
