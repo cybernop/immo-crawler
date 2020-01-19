@@ -5,7 +5,7 @@ from datetime import datetime
 class Entry:
     __slots__ = ['uuid', 'id', 'mod_date', 'title', 'living_space', 'number_of_rooms', 'balcony', 'garden',
                  'built_in_kitchen', 'private', 'price_base', 'price_warm', 'source', 'url', 'address', 'contact',
-                 'travel_times', 'transportation']
+                 'travel_times', 'transportation', 'images', 'coordinates']
 
     def __init__(self):
         self.uuid = None
@@ -23,9 +23,11 @@ class Entry:
         self.source = None
         self.url = None
         self.address = None
+        self.coordinates = None
         self.contact = None
         self.travel_times = []
         self.transportation = []
+        self.images = []
 
     def __str__(self):
         max_length = 80
@@ -62,6 +64,9 @@ class Address:
         self.quarter = None
         self.city = None
 
+    def is_valid(self):
+        return self.street and self.house_number and self.post_code and self.city
+
 
 class Contact:
     __slots__ = ['company', 'first_name', 'last_name', 'mobile_phone', 'phone']
@@ -95,6 +100,9 @@ class Listings:
 
     def __setstate__(self, state):
         super(Listings, self).__setattr__('map', state)
+
+    def items(self):
+        return self.map.items()
 
     def __len__(self):
         return len(self.map)
