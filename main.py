@@ -43,7 +43,7 @@ def main():
     gmaps_config = cfg['google']
     gmaps_client = googlemaps.Client(gmaps_config['api_key'], gmaps_config['travel_locations'])
 
-    crawler = cwlr.Crawler(config, args.data_dir, None, gmaps_client)
+    crawler = cwlr.Crawler(config, args.data_dir, notifier, gmaps_client)
     while True:
         crawler.crawl()
         time.sleep(cfg['update_interval'])
