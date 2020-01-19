@@ -5,33 +5,22 @@ import requests
 from immocrawler.provider import listing
 
 
-def get_apartments(config, provider_config):
+def get_apartments(provider_config):
     logger = logging.getLogger(__name__)
     logger.info("Getting information from immobilienscout24.de")
 
-    list_ = listing.Listings()
-    for label, district in provider_config['districts'].items():
-        logger.info(f"for {label}...")
-        listings = _get_apartments(provider_config['state'], provider_config['city'], district, config)
-        logger.info(f"...got {len(listings)} entries")
-        list_.update(listings)
-    logger.info("...done")
+    logger.info(f"for {provider_config['city']}...")
+    listings = _get_apartments(provider_config['state'], provider_config['city'])
+    logger.info(f"...got {len(listings)} entries")
 
-    return list_
+    return listings
 
 
-def _get_apartments(state, city, district, config):
-    min_price = __format_for_url(config.min_price)
-    max_price = __format_for_url(config.max_price)
-    min_rooms = __format_for_url(config.min_rooms)
-    max_rooms = __format_for_url(config.max_rooms)
-    min_size = __format_for_url(config.min_size)
-    max_size = __format_for_url(config.max_size)
-
+def _get_apartments(state, city):
     i = 1
     results = listing.Listings()
     while True:
-        url = f'https://www.immobilienscout24.de/Suche/S-T/P-{i}/Wohnung-Miete/{state}/{city}/{district}/{min_rooms}-{max_rooms}/{min_size}-{max_size}/EURO-{min_price}-{max_price}/-/-/-/true/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/2,3'
+        url = f'https://www.immobilienscout24.de/Suche/S-T/P-{i}/Wohnung-Miete/{state}/{city}/-/-/-/-/-/-/-/true/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/2,3'
 
         r = requests.post(url)
         result_list = r.json()['searchResponseModel']['resultlist.resultlist']

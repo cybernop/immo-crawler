@@ -32,18 +32,12 @@ def main():
     with open(args.config, 'r') as yml_file:
         cfg = yaml.load(yml_file, Loader=yaml.SafeLoader)
 
-    config = cwlr.Config()
-    config.min_size = 60
-    config.min_price = 500
-    config.max_price = 1500
-    config.providers = cfg['providers']
-
     notifier = ntfr.Client(args.notifier_url)
 
     gmaps_config = cfg['google']
     gmaps_client = googlemaps.Client(gmaps_config['api_key'], gmaps_config['travel_locations'])
 
-    crawler = cwlr.Crawler(config, args.data_dir, notifier, gmaps_client)
+    crawler = cwlr.Crawler(cfg, args.data_dir, notifier, gmaps_client)
     while True:
         crawler.crawl()
         time.sleep(cfg['update_interval'])
