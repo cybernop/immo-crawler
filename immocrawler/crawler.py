@@ -57,11 +57,11 @@ class Crawler:
     def get_updated_entries(apartments, updated):
         updated_entries = []
         for update in updated:
-            try:
-                entry = getattr(apartments, update.uuid)
-                updated_entries.append(entry)
-            except AttributeError:
+            entry = getattr(apartments, update.uuid)
+            if not entry:
                 logger.debug(f'ignore removed entry {update.uuid}')
+            else:
+                updated_entries.append(entry)
         return updated_entries
 
 
