@@ -3,8 +3,16 @@ providers:
   immobilienscout24:
     state: state
     city: city
-    districts:
-      district: district
+filters:
+  post_code:
+    - 12345
+  price_warm:
+    min: 100
+    max: 200
+  living_space:
+    min: 10
+  travel_time:
+    max: 10
 google:
   api_key:
   travel_locations:

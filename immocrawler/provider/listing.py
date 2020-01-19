@@ -122,6 +122,12 @@ class Listings:
                 self.logger.error(f'Listings.update: ignore invalid entry {app}')
         return updated
 
+    def remove_entry(self, uuid):
+        try:
+            del self.map[uuid]
+        except KeyError:
+            self.logger.error(f'failed to remove entry, uuid {uuid} does not exists')
+
     def remove_not_existing(self, other) -> int:
         remove_uuids = []
         for uuid in self.map:

@@ -3,21 +3,12 @@ import pathlib
 
 import yaml
 
-from immocrawler import provider, googlemaps
+from immocrawler import provider, ftr
 from immocrawler.inout import cache
 
 CACHE_FILE_NAME = 'cache'
 
-
-class Config:
-    def __init__(self):
-        self.min_price = 0
-        self.max_price = 0
-        self.min_size = 0
-        self.max_size = 0
-        self.min_rooms = 0
-        self.max_rooms = 0
-        self.providers = {}
+logger = logging.getLogger(__name__)
 
 
 class Crawler:
@@ -29,10 +20,16 @@ class Crawler:
         self.notifier = notifier
         self.gmaps_client = gmaps_client
 
+        self.filter = ftr.Filter(config['filters'])
+
     def crawl(self):
         apartments = cache.read(self.cache_file)
 
-        apartments_new = provider.get_apartments(self.config)
+        apartments_new = provider.get_apartments(self.config['providers'])
+
+        self.filter.filter_post_code(apartments_new)
+        self.filter.filter_living_space(apartments_new)
+        self.filter.filter_price(apartments_new)
 
         updated = apartments.update(apartments_new)
         removed = apartments.remove_not_existing(apartments_new)
@@ -40,6 +37,8 @@ class Crawler:
 
         # googlemaps.add_gmaps_link(apartments)
         self.gmaps_client.add_travel_time(apartments)
+
+        self.filter.filter_travel_time(apartments)
 
         if self.notifier and len(updated) > 0:
             notification = f'got {len(updated)} updates, removed {removed}'
@@ -53,7 +52,14 @@ class Crawler:
 
     @staticmethod
     def get_updated_entries(apartments, updated):
-        return [getattr(apartments, update.uuid) for update in updated]
+        updated_entries = []
+        for update in updated:
+            try:
+                entry = getattr(apartments, update.uuid)
+                updated_entries.append(entry)
+            except AttributeError:
+                logger.debug(f'ignore removed entry {update.uuid}')
+        return updated_entries
 
 
 if __name__ == '__main__':
@@ -63,13 +69,7 @@ if __name__ == '__main__':
         with open("configs/config.yml", 'r') as yml_file:
             cfg = yaml.load(yml_file, Loader=yaml.SafeLoader)
 
-        config = Config()
-        config.min_size = 60
-        config.min_price = 500
-        config.max_price = 1500
-        config.providers = cfg['providers']
-
-        crawler = Crawler(config)
+        crawler = Crawler(cfg)
         crawler.crawl()
 
 
