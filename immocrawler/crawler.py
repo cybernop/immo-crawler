@@ -3,7 +3,7 @@ import pathlib
 
 import yaml
 
-from immocrawler import provider
+from immocrawler import provider, googlemaps
 from immocrawler.inout import cache
 
 CACHE_FILE_NAME = 'cache'
@@ -22,11 +22,12 @@ class Config:
 
 class Crawler:
 
-    def __init__(self, config, data_dir='.', notifier=None):
+    def __init__(self, config, data_dir='.', notifier=None, gmaps_client=None):
         self.config = config
         self.data_dir = pathlib.Path(data_dir).absolute()
         self.cache_file = self.data_dir / CACHE_FILE_NAME
         self.notifier = notifier
+        self.gmaps_client = gmaps_client
 
     def crawl(self):
         apartments = cache.read(self.cache_file)
@@ -38,7 +39,7 @@ class Crawler:
         logging.getLogger().info(f"got {len(updated)} updates, removed {removed}")
 
         # googlemaps.add_gmaps_link(apartments)
-        # add_travel_time(cfg['google'], apartments)
+        self.gmaps_client.add_travel_time(apartments)
 
         if self.notifier and len(updated) > 0:
             notification = f'got {len(updated)} updates, removed {removed}'
@@ -53,9 +54,6 @@ class Crawler:
     @staticmethod
     def get_updated_entries(apartments, updated):
         return [getattr(apartments, update.uuid) for update in updated]
-
-    # def add_travel_time(google_cfg, apartments):
-    #     googlemaps.add_travel_time(apartments, google_cfg)
 
 
 if __name__ == '__main__':

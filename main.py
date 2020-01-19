@@ -7,6 +7,7 @@ import yaml
 
 import immocrawler.crawler as cwlr
 import immocrawler.notifier as ntfr
+from immocrawler import googlemaps
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -39,7 +40,10 @@ def main():
 
     notifier = ntfr.Client(args.notifier_url)
 
-    crawler = cwlr.Crawler(config, args.data_dir, notifier)
+    gmaps_config = cfg['google']
+    gmaps_client = googlemaps.Client(gmaps_config['api_key'], gmaps_config['travel_locations'])
+
+    crawler = cwlr.Crawler(config, args.data_dir, notifier, gmaps_client)
     while True:
         crawler.crawl()
         time.sleep(cfg['update_interval'])
