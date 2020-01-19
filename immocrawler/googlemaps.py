@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 import requests
 
@@ -57,7 +58,9 @@ class Client:
         legs = r.json()['routes'][0]['legs'][0]
         transit = [_get_transport(step) for step in legs['steps']]
 
-        return legs['duration']['text'], transit
+        duration = timedelta(seconds=legs['duration']['value'])
+
+        return duration, transit
 
 
 def _get_transport(step):

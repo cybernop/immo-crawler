@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 from immocrawler.provider import listing
 
@@ -100,14 +101,14 @@ class Filter:
 
     def __should_remove_travel_time(self, entry: listing.Entry):
         span = self.config['travel_time']
+        min = timedelta(minutes=span['min']) if 'min' in span else None
+        max = timedelta(minutes=span['max']) if 'max' in span else None
 
         for travel_time in entry.travel_times:
-            minutes = int(travel_time.replace('mins', '').strip())
-
-            if 'min' in span and minutes < span['min']:
+            if min and travel_time < min:
                 return True
 
-            if 'max' in span and minutes > span['max']:
+            if max and travel_time > max:
                 return True
 
         return False
