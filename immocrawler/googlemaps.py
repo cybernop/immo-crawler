@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 import requests
 
@@ -35,11 +34,15 @@ class Client:
         logger.info("Adding travel time")
         n_added = 0
         for _, apartment in apartments.items():
-            if not apartment.travel_times and apartment.address.is_valid():
+            if not apartment.travel_times and not apartment.transportation and apartment.address.is_valid():
                 travel_times = []
+                transits = set()
                 for loc in self.travel_locations:
-                    travel_times.append(self.__get_travel_time(loc, apartment.address))
+                    travel_time, transit = self.__get_travel_time(loc, apartment.address)
+                    travel_times.append(travel_time)
+                    transits.update(transit)
                 apartment.travel_times = travel_times
+                apartment.transportation = list(transits)
                 n_added += 1
                 logger.debug(f'added {n_added} entries')
         logger.info(f"...done for {n_added} entries")
@@ -51,7 +54,18 @@ class Client:
         url = f'https://maps.googleapis.com/maps/api/directions/json?origin={origin}&destination={destination}&key={self.api_key}&mode=transit'
 
         r = requests.post(url)
-        return r.json()['routes'][0]['legs'][0]['duration']['text']
+        legs = r.json()['routes'][0]['legs'][0]
+        transit = [_get_transport(step) for step in legs['steps']]
+
+        return legs['duration']['text'], transit
+
+
+def _get_transport(step):
+    if 'transit_details' in step:
+        line = step['transit_details']['line']
+        return f'{line["vehicle"]["name"]} {line["short_name"]}'
+
+    return step['travel_mode']
 
 
 def convert_to_string(loc: listing.Address):
