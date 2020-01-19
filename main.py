@@ -17,8 +17,12 @@ def main():
     arg_parser.add_argument('--data-dir', default='.', help='directory where to store data')
     arg_parser.add_argument('--config', required=True, help='config yaml file')
     arg_parser.add_argument('--notifier-url', required=True, help='url of the notifier service')
+    arg_parser.add_argument('--verbose', action='store_true', help='more verbose output')
 
     args = arg_parser.parse_args()
+
+    if args.verbose:
+        logging.getLogger().setLevel(level=logging.DEBUG)
 
     if not pathlib.Path(args.config).exists():
         logging.error(f'config file does not exist {args.config}')
