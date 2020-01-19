@@ -40,7 +40,7 @@ class Entry:
         ]
 
         if self.travel_times:
-            repr.append(' / '.join(self.travel_times))
+            repr.append(' / '.join([str(time) for time in self.travel_times]))
 
         if self.transportation:
             repr.append(', '.join(self.transportation))
