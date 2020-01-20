@@ -4,9 +4,10 @@ import requests
 
 from immocrawler.provider import listing
 
+logger = logging.getLogger(__name__)
+
 
 def get_apartments(provider_config):
-    logger = logging.getLogger(__name__)
     logger.info("Getting information from immobilienscout24.de")
 
     logger.info(f"for {provider_config['city']}...")
@@ -27,8 +28,12 @@ def _get_apartments(state, city):
         entries = result_list['resultlistEntries'][0]['resultlistEntry']
 
         for entry in entries:
-            entry = __make_entry(entry)
-            setattr(results, entry.uuid, entry)
+            try:
+                entry = __make_entry(entry)
+            except Exception as e:
+                logger.error(f'failed to create entry: {e}')
+            else:
+                setattr(results, entry.uuid, entry)
 
         i += 1
 
