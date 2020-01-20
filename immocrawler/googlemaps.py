@@ -56,10 +56,16 @@ class Client:
         url = f'https://maps.googleapis.com/maps/api/directions/json?origin={origin}&destination={destination}&key={self.api_key}&mode=transit'
 
         r = requests.post(url)
-        legs = r.json()['routes'][0]['legs'][0]
-        transit = [_get_transport(step) for step in legs['steps']]
+        try:
+            legs = r.json()['routes'][0]['legs'][0]
+        except (IndexError, KeyError) as e:
+            logger.error(f'failed to get transportation legs: {e}')
+            duration = []
+            transit = []
+        else:
+            transit = [_get_transport(step) for step in legs['steps']]
 
-        duration = timedelta(seconds=legs['duration']['value'])
+            duration = timedelta(seconds=legs['duration']['value'])
 
         return duration, transit
 
