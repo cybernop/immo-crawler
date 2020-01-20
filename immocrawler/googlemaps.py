@@ -41,8 +41,10 @@ class Client:
                 transits = set()
                 for loc in self.travel_locations:
                     travel_time, transit = self.__get_travel_time(loc, apartment.address)
-                    travel_times.append(travel_time)
-                    transits.update(transit)
+                    if travel_time:
+                        travel_times.append(travel_time)
+                    if transit:
+                        transits.update(transit)
                 apartment.travel_times = travel_times
                 apartment.transportation = list(transits)
                 n_added += 1
@@ -60,8 +62,8 @@ class Client:
             legs = r.json()['routes'][0]['legs'][0]
         except (IndexError, KeyError) as e:
             logger.error(f'failed to get transportation legs: {e}')
-            duration = []
-            transit = []
+            duration = None
+            transit = None
         else:
             transit = [_get_transport(step) for step in legs['steps']]
 
