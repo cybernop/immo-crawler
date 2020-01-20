@@ -34,8 +34,9 @@ class Client:
     def add_travel_time(self, apartments):
         logger.info("Adding travel time")
         n_added = 0
+        ignore = apartments.deleted
         for _, apartment in apartments.items():
-            if not apartment.travel_times and not apartment.transportation and apartment.address.is_valid():
+            if apartment.uuid not in ignore and not apartment.travel_times and not apartment.transportation and apartment.address.is_valid():
                 travel_times = []
                 transits = set()
                 for loc in self.travel_locations:
