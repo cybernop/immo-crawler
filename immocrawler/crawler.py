@@ -26,6 +26,7 @@ class Crawler:
         apartments = cache.read(self.cache_file)
 
         apartments_new = provider.get_apartments(self.config['providers'])
+        apartments.tidy_deleted(apartments_new)
 
         self.filter.filter_post_code(apartments_new)
         self.filter.filter_living_space(apartments_new)

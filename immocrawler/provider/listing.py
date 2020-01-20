@@ -82,6 +82,7 @@ class Contact:
 class Listings:
     def __init__(self):
         super(Listings, self).__setattr__('map', {})
+        super(Listings, self).__setattr__('_deleted', [])
         super(Listings, self).__setattr__('logger', logging.getLogger(__name__))
 
     def __getattr__(self, item: str):
@@ -96,10 +97,12 @@ class Listings:
             self.map[key] = value
 
     def __getstate__(self):
-        return self.map
+        return self.map, self._deleted
 
     def __setstate__(self, state):
-        super(Listings, self).__setattr__('map', state)
+        map_, deleted = state
+        super(Listings, self).__setattr__('map', map_)
+        super(Listings, self).__setattr__('_deleted', deleted)
 
     def items(self):
         return self.map.items()
@@ -127,14 +130,22 @@ class Listings:
             del self.map[uuid]
         except KeyError:
             self.logger.error(f'failed to remove entry, uuid {uuid} does not exists')
+        else:
+            self._deleted.append(uuid)
 
     def remove_not_existing(self, other) -> int:
-        remove_uuids = []
-        for uuid in self.map:
-            if uuid not in other.map.keys():
-                remove_uuids.append(uuid)
-
+        remove_uuids = [uuid for uuid in self.map if uuid not in other.map.keys()]
         for uuid in remove_uuids:
             del self.map[uuid]
+            self._deleted.append(uuid)
 
         return len(remove_uuids)
+
+    def tidy_deleted(self, reference):
+        remove_uuids = [uuid for uuid in self._deleted if uuid not in reference.map.keys()]
+        for uuid in remove_uuids:
+            self._deleted.remove(uuid)
+
+    @property
+    def deleted(self):
+        return self._deleted
