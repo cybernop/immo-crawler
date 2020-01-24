@@ -13,6 +13,8 @@ filters:
     min: 10
   travel_time:
     max: 10
+  title_words:
+    - exclude
 google:
   api_key:
   travel_locations:

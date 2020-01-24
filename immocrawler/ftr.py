@@ -10,6 +10,25 @@ class Filter:
     def __init__(self, config):
         self.config = config
 
+    def filter_title(self, listings: listing.Listings):
+        logger.info('filter title...')
+        remove_uuids = []
+        try:
+            for uuid, entry in listings.items():
+                if self.__should_remove_title(entry):
+                    remove_uuids.append(uuid)
+                    continue
+
+            for uuid in remove_uuids:
+                listings.remove_entry(uuid)
+
+            logger.info(f'...removed {len(remove_uuids)} entries')
+        except KeyError:
+            logger.warning(f'could not filter as entry is missing in config')
+
+    def __should_remove_title(self, entry: listing.Entry):
+        return any(title_word.lower() in entry.title.lower() for title_word in self.config['title_words'])
+
     def filter_post_code(self, listings: listing.Listings):
         logger.info('filter post code...')
         remove_uuids = []
