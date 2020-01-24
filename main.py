@@ -29,7 +29,7 @@ def main():
         logging.error(f'config file does not exist {args.config}')
         exit(-1)
 
-    with open(args.config, 'r') as yml_file:
+    with open(args.config, 'r', encoding='utf-8') as yml_file:
         cfg = yaml.load(yml_file, Loader=yaml.SafeLoader)
 
     notifier = ntfr.Client(args.notifier_url)

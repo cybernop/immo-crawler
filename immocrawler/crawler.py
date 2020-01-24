@@ -28,6 +28,7 @@ class Crawler:
         apartments_new = provider.get_apartments(self.config['providers'])
         apartments.tidy_deleted(apartments_new)
 
+        self.filter.filter_title(apartments_new)
         self.filter.filter_post_code(apartments_new)
         self.filter.filter_living_space(apartments_new)
         self.filter.filter_price(apartments_new)
@@ -70,7 +71,7 @@ if __name__ == '__main__':
     def main():
         logging.basicConfig(level=logging.INFO)
 
-        with open("configs/config.yml", 'r') as yml_file:
+        with open("configs/config.yml", 'r', encoding='utf-8') as yml_file:
             cfg = yaml.load(yml_file, Loader=yaml.SafeLoader)
 
         crawler = Crawler(cfg)
