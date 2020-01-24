@@ -35,7 +35,7 @@ class Crawler:
 
         updated = apartments.update(apartments_new)
         removed = apartments.remove_not_existing(apartments_new)
-        logging.getLogger().info(f"got {len(updated)} updates, removed {removed}")
+        logging.getLogger().info(f"got {len(updated)} updates, removed {len(removed)}")
 
         # googlemaps.add_gmaps_link(apartments)
         self.gmaps_client.add_travel_time(apartments)
