@@ -133,13 +133,15 @@ class Listings:
         else:
             self._deleted.append(uuid)
 
-    def remove_not_existing(self, other) -> int:
+    def remove_not_existing(self, other):
         remove_uuids = [uuid for uuid in self.map if uuid not in other.map.keys()]
+        removed = []
         for uuid in remove_uuids:
+            removed.append(self.map[uuid])
             del self.map[uuid]
             self._deleted.append(uuid)
 
-        return len(remove_uuids)
+        return removed
 
     def tidy_deleted(self, reference):
         remove_uuids = [uuid for uuid in self._deleted if uuid not in reference.map.keys()]
