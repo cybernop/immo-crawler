@@ -44,10 +44,11 @@ class Crawler:
 
         try:
             if self.notifier and len(updated) > 0:
-                notification = f'got {len(updated)} updates, removed {removed}'
-                self.notifier.send_message(notification)
-                entries = self.get_updated_entries(apartments, updated)
+                for entry in removed:
+                    message = f'<s>{entry.title}</s>'
+                    self.notifier.send_message(message)
 
+                entries = self.get_updated_entries(apartments, updated)
                 for entry in entries:
                     self.notifier.send_message(str(entry))
         except Exception as e:
