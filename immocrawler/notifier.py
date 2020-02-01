@@ -12,7 +12,6 @@ class Client:
 
     def send_message(self, message):
         r = requests.post(f'{self.base_url}/message', data=json.dumps({'message': message}))
-        logger.info(r.text)
 
 
 if __name__ == '__main__':

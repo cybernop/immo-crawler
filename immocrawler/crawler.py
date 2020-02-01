@@ -47,10 +47,12 @@ class Crawler:
                 for entry in removed:
                     message = f'<s>{entry.title}</s>'
                     self.notifier.send_message(message)
+                logger.info(f'send notifications for {len(removed)} removed entries')
 
                 entries = self.get_updated_entries(apartments, updated)
                 for entry in entries:
                     self.notifier.send_message(str(entry))
+                logger.info(f'send notifications for {len(entries)} new/updated entries')
         except Exception as e:
             logger.error(f'failed to send notifications: {e}')
 
