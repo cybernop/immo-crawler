@@ -88,8 +88,8 @@ class TestListingsRemove(unittest.TestCase):
         self.assertEqual(0, len(listings2), 'listing2 not empty at beginning')
 
         removed = listings1.remove_not_existing(listings2)
-        self.assertEqual(0, removed, 'number of removed entries does not match')
-        self.assertEqual(listings1_len - removed, len(listings1), 'remaining number of entries does not match')
+        self.assertEqual(0, len(removed), 'number of removed entries does not match')
+        self.assertEqual(listings1_len - len(removed), len(listings1), 'remaining number of entries does not match')
 
     def test_no_remove(self):
         entry = listing.Entry()
@@ -105,8 +105,8 @@ class TestListingsRemove(unittest.TestCase):
         self.assertEqual(1, len(listings2), 'listing2 does not contain entry at beginning')
 
         removed = listings1.remove_not_existing(listings2)
-        self.assertEqual(0, removed, 'number of removed entries does not match')
-        self.assertEqual(listings1_len - removed, len(listings1), 'remaining number of entries does not match')
+        self.assertEqual(0, len(removed), 'number of removed entries does not match')
+        self.assertEqual(listings1_len - len(removed), len(listings1), 'remaining number of entries does not match')
 
     def test_remove(self):
         entry = listing.Entry()
@@ -121,8 +121,8 @@ class TestListingsRemove(unittest.TestCase):
         self.assertEqual(0, len(listings2), 'listing2 not empty at beginning')
 
         removed = listings1.remove_not_existing(listings2)
-        self.assertEqual(1, removed, 'number of removed entries does not match')
-        self.assertEqual(listings1_len - removed, len(listings1), 'remaining number of entries does not match')
+        self.assertEqual(1, len(removed), 'number of removed entries does not match')
+        self.assertEqual(listings1_len - len(removed), len(listings1), 'remaining number of entries does not match')
 
 
 if __name__ == '__main__':

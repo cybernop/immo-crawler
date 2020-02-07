@@ -43,14 +43,18 @@ class Crawler:
         self.filter.filter_travel_time(apartments)
 
         try:
-            if self.notifier and len(updated) > 0:
-                for entry in removed:
-                    message = f'<s>{entry.title}</s>'
-                    self.notifier.send_message(message)
+            if self.notifier:
+                if len(removed) > 0:
+                    for entry in removed:
+                        message = f'<s>{entry.title}</s>'
+                        self.notifier.send_message(message)
+                    logger.info(f'send notifications for {len(removed)} removed entries')
 
-                entries = self.get_updated_entries(apartments, updated)
-                for entry in entries:
-                    self.notifier.send_message(str(entry))
+                if len(updated) > 0:
+                    entries = self.get_updated_entries(apartments, updated)
+                    for entry in entries:
+                        self.notifier.send_message(str(entry))
+                    logger.info(f'send notifications for {len(entries)} new/updated entries')
         except Exception as e:
             logger.error(f'failed to send notifications: {e}')
 
