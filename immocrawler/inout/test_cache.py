@@ -23,8 +23,9 @@ class TestCache(TestCase):
         entry = listing.Entry()
         entry.id = '123'
 
-        cache.write(entry, str(file))
+        cache.write([entry], str(file))
         self.assertTrue(file.exists())
 
-        entry_read = cache.read(str(file))
-        self.assertEqual(entry.id, entry_read.id)
+        entries_read = cache.read(str(file))
+        self.assertEqual(1, len(entries_read))
+        self.assertEqual(entry.id, entries_read[0].id)
