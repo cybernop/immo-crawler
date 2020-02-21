@@ -103,8 +103,10 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# IDE folders
 .idea
+.vscode
 
-config.yml
+configs
 
 cache
