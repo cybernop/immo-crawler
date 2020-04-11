@@ -21,7 +21,7 @@ def _get_apartments(state, city):
     i = 1
     results = listing.Listings()
     while True:
-        url = f'https://www.immobilienscout24.de/Suche/S-T/P-{i}/Wohnung-Miete/{state}/{city}/-/-/-/-/-/-/-/true/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/2,3'
+        url = f'https://www.immobilienscout24.de/Suche/S-T/P-{i}/Wohnung-Miete/{state}/{city}/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/2,3'
 
         r = requests.post(url)
         result_list = r.json()['searchResponseModel']['resultlist.resultlist']
