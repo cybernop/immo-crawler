@@ -21,7 +21,7 @@ RUN apk add --no-cache --virtual .build-deps \
     build-base \
     libffi-dev \
     libressl-dev \
-    && pip install dist/immocrawler-0.1-py3-none-any.whl \
+    && pip install dist/immocrawler-*.whl \
     && apk del .build-deps
 
 RUN apk add --no-cache \
